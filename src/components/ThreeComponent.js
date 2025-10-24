@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react"; // Eliminado useEffect
 
 export const ThreeComponent = ({ users = [], onUserUpdated }) => {
     const [selectedId, setSelectedId] = useState("");
@@ -10,7 +10,6 @@ export const ThreeComponent = ({ users = [], onUserUpdated }) => {
         setSelectedId(id);
         const user = users.find((u) => u.id === parseInt(id));
         if (user) {
-            // Inicializa el formulario solo con los campos existentes
             setForm({ name: user.name, email: user.email, phone: user.phone });
             setMessage(""); 
         } else {
@@ -20,34 +19,17 @@ export const ThreeComponent = ({ users = [], onUserUpdated }) => {
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-    const handleUpdate = async (e) => {
+    const handleUpdate = (e) => {
         e.preventDefault();
         if (!selectedId) return;
         
-        const existingUser = users.find(u => u.id === parseInt(selectedId));
-        if (!existingUser) return;
-        
-        try {
-            // 🛑 CAMBIO CLAVE: Aseguramos que el payload no tenga 'password' del estado inicial
-            const updatePayload = {
-                // Mantenemos solo los campos que sabemos que existen en la DB y que no estamos editando
-                id: existingUser.id,
-                created_at: existingUser.created_at,
-                // Agregamos los valores actualizados del formulario
-                ...form,
-            };
+        // Simula la llamada API: llama a la función de actualización centralizada en App.js
+        const result = onUserUpdated(selectedId, form);
 
-            const res = await fetch(`http://localhost:3000/users/${selectedId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatePayload),
-            });
-            if (res.ok) {
-                setMessage("✅ Usuario actualizado correctamente.");
-                if (onUserUpdated) onUserUpdated();
-            } else setMessage("❌ Error al actualizar usuario.");
-        } catch {
-            setMessage("⚠️ No se pudo conectar con el servidor.");
+        if (result.success) {
+            setMessage("✅ Usuario actualizado correctamente.");
+        } else {
+            setMessage(`❌ Error al actualizar usuario: ${result.error || "No encontrado"}`);
         }
     };
 

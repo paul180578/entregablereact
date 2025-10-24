@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 export const FirstComponent = ({ onUserCreated }) => {
-    // 🚩 CORREGIDO: El estado inicial SOLO contiene los campos de la DB
     const [form, setForm] = useState({ name: "", email: "", phone: "" });
     const [status, setStatus] = useState("");
 
@@ -11,36 +10,20 @@ export const FirstComponent = ({ onUserCreated }) => {
         e.preventDefault();
         setStatus("");
 
-        // Validación básica antes de enviar
         if (!form.name || !form.email || !form.phone) {
             setStatus("❌ Por favor, complete todos los campos.");
             return;
         }
 
-        try {
-            const response = await fetch("http://localhost:3000/users", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    // Se envía SÓLO el formulario actual (name, email, phone)
-                    ...form,
-                    created_at: new Date().toISOString()
-                }),
-            });
+        // Llamar a la función de creación centralizada en App.js (usa localStorage)
+        const result = onUserCreated(form);
 
-            if (response.ok) {
-                setStatus("✅ Usuario agregado correctamente.");
-                // 🚩 CORREGIDO: Resetear el formulario sin la propiedad 'password'
-                setForm({ name: "", email: "", phone: "" }); 
-                if (onUserCreated) onUserCreated();
-            } else {
-                // Leer el error si la API lo proporciona
-                const errorData = await response.json();
-                console.error("Error del servidor:", errorData);
-                setStatus("❌ Error al agregar usuario (Server Error).");
-            }
-        } catch {
-            setStatus("⚠️ No se pudo conectar con el servidor. Verifica que el backend esté en http://localhost:3000.");
+        if (result.success) {
+            setStatus("✅ Usuario agregado correctamente. ID: " + result.user.id);
+            setForm({ name: "", email: "", phone: "" }); 
+        } else {
+            // El error es manejado en App.js (por ejemplo, duplicado de email)
+            setStatus(`❌ Error al agregar usuario: ${result.error || "Error desconocido"}`);
         }
     };
 
