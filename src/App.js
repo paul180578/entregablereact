@@ -149,7 +149,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div className="App-logo">⛭</div> 
-        <h1>CYBERNETIC USER MANAGEMENT SYSTEM (Local Storage)</h1>
+        <h1>CYBERNETIC USER MANAGEMENT SYSTEM </h1>
 
         {/* 🧭 Navegación: Añadido data-text para el efecto Glitch */}
         <div className="tab-buttons">
