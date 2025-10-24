@@ -11,9 +11,9 @@ const LOCAL_STORAGE_KEY = "cybernetic_user_system_users";
 // Datos semilla iniciales para la primera carga
 const INITIAL_SEED_DATA = [
   { id: 1, name: 'Juan Pérez', email: 'juan@gmail.com', phone: '555-1234', created_at: new Date().toISOString() },
-  { id: 2, name: 'Ana López', email: 'ana@example.com', phone: '555-5678', created_at: new Date(Date.now() - 86400000 * 5).toISOString() }, 
+  { id: 2, name: 'Ana López', email: 'ana@example.com', phone: '555-5678', created_at: new Date(Date.now() - 86400000 * 5).toISOString() }, // 5 días de antigüedad
   { id: 3, name: 'Carlos García', email: 'carlos@gmail.com', phone: '555-9012', created_at: new Date().toISOString() },
-  { id: 4, name: 'María Fernández', email: 'maria@example.com', phone: '555-3456', created_at: new Date(Date.now() - 86400000 * 10).toISOString() }, 
+  { id: 4, name: 'María Fernández', email: 'maria@example.com', phone: '555-3456', created_at: new Date(Date.now() - 86400000 * 10).toISOString() }, // 10 días de antigüedad
   { id: 5, name: 'Lucía Torres', email: 'lucia@gmail.com', phone: '555-7890', created_at: new Date().toISOString() }
 ];
 
@@ -115,8 +115,8 @@ function App() {
   // Delete
   const handleUserDeleted = (id) => {
     const userId = parseInt(id);
+    const initialLength = users.length;
     
-    // Corregido: La eliminación del usuario se maneja internamente.
     setUsers(prevUsers => prevUsers.filter(u => u.id !== userId));
     
     return { success: true }; 
@@ -133,12 +133,15 @@ function App() {
       case "stats":
         return <StatsComponent users={users} />;
       case "create":
+        // Pasa la función de creación, que también forzará un re-render por el cambio de estado 'users'
         return <FirstComponent onUserCreated={handleUserCreated} />; 
       case "read":
         return <SecondComponent users={users} />;
       case "update":
+        // Pasa la función de actualización
         return <ThreeComponent users={users} onUserUpdated={handleUserUpdated} />;
       case "delete":
+        // Pasa la función de eliminación
         return <FourComponent users={users} onUserDeleted={handleUserDeleted} />;
       default:
         return null;
@@ -149,7 +152,8 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div className="App-logo">⛭</div> 
-        <h1>CYBERNETIC USER MANAGEMENT SYSTEM </h1>
+        {/* Título limpio para la versión final publicada */}
+        <h1>CYBERNETIC USER MANAGEMENT SYSTEM</h1> 
 
         {/* 🧭 Navegación: Añadido data-text para el efecto Glitch */}
         <div className="tab-buttons">
